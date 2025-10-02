@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Food Calorie Estimator – Upload</title>
+  <style>
+    /* --- Modern, pleasing but still simple --- */
+    :root{
+      --bg1:#f8fafc;          /* page bg */
+      --bg2:#eef2ff;          /* subtle gradient tint */
+      --card:#ffffff;         /* card bg */
+      --text:#0f172a;         /* slate-900 */
+      --muted:#64748b;        /* slate-500 */
+      --border:#e5e7eb;       /* gray-200 */
+      --accent:#4f46e5;       /* indigo-600 */
+      --accent-2:#22c55e;     /* green-500 */
+      --ring:#c7d2fe;         /* indigo-200 */
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; 
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, var(--bg2), transparent),
+                  radial-gradient(1000px 500px at 120% 10%, #fee2e2, transparent),
+                  var(--bg1);
+    }
+    .wrap { min-height: 100%; display: grid; place-items: center; padding: 32px 16px; }
+    .card { width: 100%; max-width: 720px; background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+
+    .header { padding: 28px 28px 8px; }
+    .title { margin: 0; font-size: 1.6rem; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
+    .title .badge { font-size: .85rem; color: white; background: linear-gradient(135deg, var(--accent), #7c3aed); padding: 4px 10px; border-radius: 999px; }
+    .subtitle { margin: 8px 0 0; color: var(--muted); }
+
+    .content { padding: 20px 28px 28px; }
+
+    .uploader { border: 2px dashed #dbeafe; background: linear-gradient(180deg, #f8fafc, #ffffff); border-radius: 14px; padding: 22px; text-align: center; transition: 160ms ease; outline: none; }
+    .uploader:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(79,70,229,.08); }
+    .uploader:focus-within { box-shadow: 0 0 0 6px var(--ring); }
+
+    .uploader input[type="file"] { display: none; }
+    .uploader .cta { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); background: #fff; transition: 160ms ease; }
+    .uploader .cta:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(2,6,23,0.06); }
+
+    .meta { font-size: 0.92rem; margin-top: 10px; color: var(--muted); }
+
+    .preview { margin-top: 16px; display: none; grid-template-columns: 120px 1fr; gap: 16px; align-items: start; }
+    .thumb { width: 120px; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #f1f5f9; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .actions { margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; }
+    button { 
+      padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; 
+      display: inline-flex; align-items: center; gap: 10px; font-weight: 600;
+    }
+    .primary { background: linear-gradient(135deg, var(--accent), #7c3aed); color: #fff; border: none; }
+    .primary:disabled { opacity: .6; cursor: not-allowed; }
+    .ghost { background: #ffffff; }
+
+    .status { margin-top: 12px; min-height: 1.2em; font-size: 0.98rem; color: var(--muted); }
+    .footer { padding: 18px 28px; background: #fafafa; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; border: 1px solid var(--border); background: #fff; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="region" aria-labelledby="title">
+      <div class="header">
+        <h1 class="title" id="title">🍽️ Food Photo Uploader <span class="badge">Calorie Estimate</span></h1>
+        <p class="subtitle">Upload a clear photo of your meal. This demo UI prepares your image to send to a backend for calorie estimation.</p>
+      </div>
+
+      <div class="content">
+        <form id="upload-form" aria-describedby="helper">
+          <div class="uploader" id="dropzone">
+            <input id="file-input" name="image" type="file" accept="image/*" />
+            <label class="cta" for="file-input">📷 Choose an image</label>
+            <div class="meta" id="helper">JPG/PNG/WebP • up to ~10MB • drag & drop supported</div>
+          </div>
+
+          <div class="preview" id="preview">
+            <div class="thumb"><img id="preview-img" alt="Selected food preview" /></div>
+            <div>
+              <div class="meta" id="file-meta"></div>
+              <div class="actions">
+                <button type="submit" id="submit-btn" class="primary" disabled>⚖️ Get calories</button>
+                <button type="button" id="clear-btn" class="ghost">🧹 Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="status" id="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div class="footer">
+        Tip: You can also drop an image directly onto the dashed box. Keyboard: press <span class="kbd">Tab</span> to focus the uploader, then <span class="kbd">Space</span> to open the file picker.
+      </div>
+    </div>
+  </div>
+
+<script>
+  const form = document.getElementById('upload-form');
+  const fileInput = document.getElementById('file-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const clearBtn = document.getElementById('clear-btn');
+  const statusEl = document.getElementById('status');
+  const preview = document.getElementById('preview');
+  const previewImg = document.getElementById('preview-img');
+  const fileMeta = document.getElementById('file-meta');
+  const dropzone = document.getElementById('dropzone');
+
+  // Drag & drop interactions
+  ['dragenter','dragover','dragleave','drop'].forEach(evt => {
+    dropzone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
+  });
+  ['dragenter','dragover'].forEach(() => {
+    dropzone.style.boxShadow = '0 0 0 6px var(--ring)';
+  });
+  ['dragleave','drop'].forEach(() => {
+    dropzone.style.boxShadow = 'none';
+  });
+  dropzone.addEventListener('drop', e => {
+    const dt = e.dataTransfer;
+    if (dt && dt.files && dt.files[0]) {
+      fileInput.files = dt.files; // assign the dropped file
+      onFileChange();
+    }
+  });
+
+  fileInput.addEventListener('change', onFileChange);
+
+  function onFileChange() {
+    statusEl.textContent = '';
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      submitBtn.disabled = true;
+      preview.style.display = 'none';
+      return;
+    }
+    submitBtn.disabled = false;
+    preview.style.display = 'grid';
+    const url = URL.createObjectURL(file);
+    previewImg.src = url;
+    fileMeta.textContent = `${file.name} • ${(file.size/1024/1024).toFixed(2)} MB`;
+  }
+
+  clearBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    statusEl.textContent = '';
+    submitBtn.disabled = true;
+    preview.style.display = 'none';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    // You can make this absolute if you're opening the HTML directly from file://
+    // const ENDPOINT = "http://127.0.0.1:5000/analyze";
+    const ENDPOINT = "/analyze";
+
+    statusEl.textContent = 'Uploading and analyzing…';
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const res = await fetch(ENDPOINT, { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Show server-side error message if present
+        const msg = data && data.error ? data.error : `HTTP ${res.status}`;
+        statusEl.textContent = `Error: ${msg}`;
+        return;
+      }
+
+      if (data && data.error) {
+        statusEl.textContent = `Error: ${data.error}`;
+        return;
+      }
+
+      // Pull out all expected fields (show gracefully if null/missing)
+      const {
+        food_name,
+        serving_description,
+        calories,
+        fat_grams,
+        protein_grams,
+        confidence_level
+      } = data;
+
+      // Build a nicer result view
+      const parts = [];
+      parts.push(`<strong>Food:</strong> ${food_name ?? '—'}`);
+      parts.push(`<strong>Serving:</strong> ${serving_description ?? '—'}`);
+      parts.push(`<strong>Calories:</strong> ${calories ?? '—'}`);
+      parts.push(`<strong>Fat:</strong> ${fat_grams ?? '—'} g`);
+      parts.push(`<strong>Protein:</strong> ${protein_grams ?? '—'} g`);
+      parts.push(`<strong>Confidence:</strong> ${confidence_level ?? '—'}`);
+
+      statusEl.innerHTML = `
+        <div style="
+          margin-top:8px;
+          padding:12px 14px;
+          border:1px solid var(--border);
+          border-radius:12px;
+          background:#ffffff;
+          box-shadow: 0 6px 16px rgba(15,23,42,0.06);
+          line-height:1.6;
+        ">
+          ${parts.join('<br/>')}
+        </div>
+      `;
+    } catch (err) {
+      console.error(err);
+      statusEl.textContent = 'Error contacting the analysis service. Check your backend URL.';
+    }
+  });
+</script>
+
+</body>
+</html>
