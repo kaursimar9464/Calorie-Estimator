@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
 
 
 from flask import Flask, request, jsonify, send_file
@@ -74,19 +73,19 @@ def query_json_only(client, pil_image, prompt, model="gpt-4o", max_tokens=200):
     return resp.choices[0].message.content
 
 from flask_cors import CORS
-# --- Flask app ---
+
 app = Flask(__name__)
 CORS(app, resources={r"/analyze": {"origins": "https://kaursimar9464.github.io"}})
 BASE_DIR = Path(__file__).parent if "__file__" in globals() else Path.cwd()
 
 @app.get("/")
 def index():
-    # Serve your HTML from the same folder
+    
     return send_file(BASE_DIR / "index.html")
 
 @app.post("/analyze")
 def analyze():
-    # Basic checks
+    
     if "image" not in request.files:
         return jsonify({"error": "No file part 'image'"}), 400
     file = request.files["image"]
@@ -116,7 +115,6 @@ def analyze():
     except Exception:
         return jsonify({"error": "Model did not return valid JSON", "raw": raw}), 500
 
-    # Keep only expected keys (in case extras sneak in)
     allowed = {"food_name", "serving_description", "calories", "fat_grams", "protein_grams", "confidence_level"}
     cleaned = {k: data.get(k, None) for k in allowed}
 
@@ -129,7 +127,7 @@ if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
 
 
-# In[ ]:
+
 
 
 

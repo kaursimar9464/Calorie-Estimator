@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Food Calorie Estimator – Upload</title>
   <style>
-    /* --- Modern, pleasing but still simple --- */
+    
     :root{
-      --bg1:#f8fafc;          /* page bg */
-      --bg2:#eef2ff;          /* subtle gradient tint */
-      --card:#ffffff;         /* card bg */
-      --text:#0f172a;         /* slate-900 */
-      --muted:#64748b;        /* slate-500 */
-      --border:#e5e7eb;       /* gray-200 */
-      --accent:#4f46e5;       /* indigo-600 */
-      --accent-2:#22c55e;     /* green-500 */
-      --ring:#c7d2fe;         /* indigo-200 */
+      --bg1:#f8fafc;          
+      --bg2:#eef2ff;          
+      --card:#ffffff;         
+      --text:#0f172a;         
+      --muted:#64748b;       
+      --border:#e5e7eb;       
+      --accent:#4f46e5;       
+      --accent-2:#22c55e;     
+      --ring:#c7d2fe;         
       --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
     }
     * { box-sizing: border-box; }
@@ -114,7 +114,7 @@
   const fileMeta = document.getElementById('file-meta');
   const dropzone = document.getElementById('dropzone');
 
-  // Drag & drop interactions
+  
   ['dragenter','dragover','dragleave','drop'].forEach(evt => {
     dropzone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }, false);
   });
@@ -127,7 +127,7 @@
   dropzone.addEventListener('drop', e => {
     const dt = e.dataTransfer;
     if (dt && dt.files && dt.files[0]) {
-      fileInput.files = dt.files; // assign the dropped file
+      fileInput.files = dt.files; 
       onFileChange();
     }
   });
@@ -161,8 +161,7 @@
     const file = fileInput.files && fileInput.files[0];
     if (!file) return;
 
-    // You can make this absolute if you're opening the HTML directly from file://
-    // const ENDPOINT = "http://127.0.0.1:5000/analyze";
+    
     const ENDPOINT = "https://calorie-estimator-bhnh.onrender.com/analyze";
 
     statusEl.textContent = 'Uploading and analyzing…';
@@ -174,7 +173,7 @@
       const data = await res.json();
 
       if (!res.ok) {
-        // Show server-side error message if present
+        
         const msg = data && data.error ? data.error : `HTTP ${res.status}`;
         statusEl.textContent = `Error: ${msg}`;
         return;
@@ -185,7 +184,7 @@
         return;
       }
 
-      // Pull out all expected fields (show gracefully if null/missing)
+      
       const {
         food_name,
         serving_description,
@@ -195,7 +194,7 @@
         confidence_level
       } = data;
 
-      // Build a nicer result view
+      
       const parts = [];
       parts.push(`<strong>Food:</strong> ${food_name ?? '—'}`);
       parts.push(`<strong>Serving:</strong> ${serving_description ?? '—'}`);
