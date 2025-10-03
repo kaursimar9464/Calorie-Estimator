@@ -1,4 +1,4 @@
-#Calorie Estimator
+## Calorie Estimator
 
 [Live Demo](https://kaursimar9464.github.io/Calorie-Estimator/)
 
