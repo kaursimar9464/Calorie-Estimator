@@ -73,9 +73,10 @@ def query_json_only(client, pil_image, prompt, model="gpt-4o", max_tokens=200):
 
     return resp.choices[0].message.content
 
-
+from flask_cors import CORS
 # --- Flask app ---
 app = Flask(__name__)
+CORS(app, resources={r"/analyze": {"origins": "https://kaursimar9464.github.io"}})
 BASE_DIR = Path(__file__).parent if "__file__" in globals() else Path.cwd()
 
 @app.get("/")
